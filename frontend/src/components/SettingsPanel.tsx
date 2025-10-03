@@ -1,0 +1,260 @@
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { Badge } from "./ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./ui/tooltip";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
+import { Hammer, Minus, Plus } from "lucide-react";
+import { PIPELINES } from "../data/pipelines";
+import type { PipelineId } from "../types";
+
+const MIN_DIMENSION_LONGLIVE = 16;
+
+interface SettingsPanelProps {
+  className?: string;
+  pipelineId: PipelineId;
+  onPipelineIdChange?: (pipelineId: PipelineId) => void;
+  isStreaming?: boolean;
+  resolution?: {
+    height: number;
+    width: number;
+  };
+  onResolutionChange?: (resolution: { height: number; width: number }) => void;
+}
+
+export function SettingsPanel({
+  className = "",
+  pipelineId,
+  onPipelineIdChange,
+  isStreaming = false,
+  resolution = { height: 320, width: 576 },
+  onResolutionChange,
+}: SettingsPanelProps) {
+  const handlePipelineIdChange = (value: string) => {
+    if (value in PIPELINES) {
+      onPipelineIdChange?.(value as PipelineId);
+    }
+  };
+
+  const handleResolutionChange = (
+    dimension: "height" | "width",
+    value: number
+  ) => {
+    const minValue = pipelineId === "longlive" ? MIN_DIMENSION_LONGLIVE : 1;
+    const maxValue = 2048;
+
+    onResolutionChange?.({
+      ...resolution,
+      [dimension]: Math.max(minValue, Math.min(maxValue, value)),
+    });
+  };
+
+  const incrementResolution = (dimension: "height" | "width") => {
+    const maxValue = 2048;
+    const newValue = Math.min(maxValue, resolution[dimension] + 1);
+    handleResolutionChange(dimension, newValue);
+  };
+
+  const decrementResolution = (dimension: "height" | "width") => {
+    const minValue = pipelineId === "longlive" ? MIN_DIMENSION_LONGLIVE : 1;
+    const newValue = Math.max(minValue, resolution[dimension] - 1);
+    handleResolutionChange(dimension, newValue);
+  };
+
+  const currentPipeline = PIPELINES[pipelineId];
+
+  return (
+    <Card className={`h-full ${className}`}>
+      <CardHeader>
+        <CardTitle className="text-base font-medium">Settings</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="space-y-2">
+          <h3 className="text-sm font-medium">Pipeline ID</h3>
+          <Select
+            value={pipelineId}
+            onValueChange={handlePipelineIdChange}
+            disabled={isStreaming}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select a pipeline" />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.keys(PIPELINES).map(id => (
+                <SelectItem key={id} value={id}>
+                  {id}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {currentPipeline && (
+          <Card>
+            <CardContent className="p-4 space-y-2">
+              <div>
+                <h4 className="text-sm font-semibold">
+                  {currentPipeline.name}
+                </h4>
+              </div>
+
+              <div className="space-y-2">
+                {(currentPipeline.projectUrl || currentPipeline.modified) && (
+                  <div className="flex items-stretch gap-1 h-6">
+                    {currentPipeline.projectUrl && (
+                      <a
+                        href={currentPipeline.projectUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block h-full"
+                      >
+                        <Badge
+                          variant="outline"
+                          className="hover:bg-accent cursor-pointer h-full flex items-center"
+                        >
+                          Project Page
+                        </Badge>
+                      </a>
+                    )}
+                    {currentPipeline.modified && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Badge
+                              variant="outline"
+                              className="cursor-help hover:bg-accent h-full flex items-center justify-center"
+                            >
+                              <Hammer className="h-3.5 w-3.5" />
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>
+                              This pipeline contains modifications based on the
+                              original project.
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+                  </div>
+                )}
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {currentPipeline.about}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {pipelineId === "longlive" && (
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium">Parameters</h3>
+
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-foreground w-14">
+                    Height:
+                  </label>
+                  <div className="flex-1 flex items-center border rounded-full overflow-hidden h-8">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 rounded-none hover:bg-accent"
+                      onClick={() => decrementResolution("height")}
+                      disabled={isStreaming}
+                    >
+                      <Minus className="h-3.5 w-3.5" />
+                    </Button>
+                    <Input
+                      type="number"
+                      value={resolution.height}
+                      onChange={e =>
+                        handleResolutionChange(
+                          "height",
+                          parseInt(e.target.value) ||
+                            (pipelineId === "longlive"
+                              ? MIN_DIMENSION_LONGLIVE
+                              : 1)
+                        )
+                      }
+                      disabled={isStreaming}
+                      className="text-center border-0 focus-visible:ring-0 focus-visible:ring-offset-0 h-8 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      min={
+                        pipelineId === "longlive" ? MIN_DIMENSION_LONGLIVE : 1
+                      }
+                      max={2048}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 rounded-none hover:bg-accent"
+                      onClick={() => incrementResolution("height")}
+                      disabled={isStreaming}
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-foreground w-14">Width:</label>
+                  <div className="flex-1 flex items-center border rounded-full overflow-hidden h-8">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 rounded-none hover:bg-accent"
+                      onClick={() => decrementResolution("width")}
+                      disabled={isStreaming}
+                    >
+                      <Minus className="h-3.5 w-3.5" />
+                    </Button>
+                    <Input
+                      type="number"
+                      value={resolution.width}
+                      onChange={e =>
+                        handleResolutionChange(
+                          "width",
+                          parseInt(e.target.value) ||
+                            (pipelineId === "longlive"
+                              ? MIN_DIMENSION_LONGLIVE
+                              : 1)
+                        )
+                      }
+                      disabled={isStreaming}
+                      className="text-center border-0 focus-visible:ring-0 focus-visible:ring-offset-0 h-8 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      min={
+                        pipelineId === "longlive" ? MIN_DIMENSION_LONGLIVE : 1
+                      }
+                      max={2048}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 rounded-none hover:bg-accent"
+                      onClick={() => incrementResolution("width")}
+                      disabled={isStreaming}
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}

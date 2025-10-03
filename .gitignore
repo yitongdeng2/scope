@@ -1,0 +1,16 @@
+.venv
+
+__pycache__
+
+/models
+
+.DS_Store
+
+output.mp4
+
+notes/
+
+# Cursor IDE files
+.cursorrules
+.cursorignore
+.cursorindexingignore
