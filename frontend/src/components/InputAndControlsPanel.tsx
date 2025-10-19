@@ -92,13 +92,13 @@ export function InputAndControlsPanel({
   };
 
   return (
-    <Card className={`h-full ${className}`}>
-      <CardHeader>
+    <Card className={`h-full flex flex-col ${className}`}>
+      <CardHeader className="flex-shrink-0">
         <CardTitle className="text-base font-medium">
           Input & Controls
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 overflow-y-auto flex-1 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:transition-colors [&::-webkit-scrollbar-thumb:hover]:bg-gray-400">
         <div>
           <h3 className="text-sm font-medium mb-2">Mode</h3>
           <Select
