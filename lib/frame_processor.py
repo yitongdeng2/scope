@@ -238,7 +238,7 @@ class FrameProcessor:
             return
 
         # prepare() will handle any required preparation based on parameters internally
-        reset_cache = self.parameters.get("reset_cache", None)
+        reset_cache = self.parameters.pop("reset_cache", None)
         requirements = pipeline.prepare(
             should_prepare=not self.is_prepared or reset_cache, **self.parameters
         )
