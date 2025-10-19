@@ -5,15 +5,6 @@ from abc import ABC, abstractmethod
 import torch
 from pydantic import BaseModel
 
-# Parameters that are only used in prepare() and should not be passed to __call__()
-PREPARE_ONLY_PARAMS = frozenset(
-    {
-        "prompt_interpolation_method",
-        "reset_cache",
-        "manage_cache",
-    }
-)
-
 
 class Requirements(BaseModel):
     """Requirements for pipeline configuration."""

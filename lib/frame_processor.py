@@ -8,11 +8,18 @@ from typing import Any
 import torch
 from aiortc.mediastreams import VideoFrame
 
-from pipelines.interface import PREPARE_ONLY_PARAMS
-
 from .pipeline_manager import PipelineManager, PipelineNotAvailableException
 
 logger = logging.getLogger(__name__)
+
+# Parameters that are only used in prepare() and should not be passed to __call__()
+PREPARE_ONLY_PARAMS = frozenset(
+    {
+        "prompt_interpolation_method",
+        "reset_cache",
+        "manage_cache",
+    }
+)
 
 # Multiply the # of output frames from pipeline by this to get the max size of the output queue
 OUTPUT_QUEUE_MAX_SIZE_FACTOR = 3
