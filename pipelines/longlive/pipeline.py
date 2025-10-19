@@ -114,12 +114,8 @@ class LongLivePipeline(Pipeline):
     def __call__(
         self,
         _: torch.Tensor | list[torch.Tensor] | None = None,
-        prompts: list[str] = None,
-        denoising_step_list: list[int] = None,
-        manage_cache: bool = True,
     ):
-        # Note: prepare() was already called by frame_processor before __call__
-        # Parameters passed here are ignored (they're prepare-only params)
+        # Note: The caller must call prepare() before __call__()
         return self.stream()
 
     def _apply_prompt_blending(

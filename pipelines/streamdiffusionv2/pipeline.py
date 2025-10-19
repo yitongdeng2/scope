@@ -200,16 +200,12 @@ class StreamDiffusionV2Pipeline(Pipeline):
     def __call__(
         self,
         input: torch.Tensor | list[torch.Tensor] | None = None,
-        prompts: list[str] = None,
-        denoising_step_list: list[int] = None,
-        noise_scale: float = None,
         noise_controller: bool = True,
-        manage_cache: bool = True,
     ) -> torch.Tensor:
         if input is None:
             raise ValueError("Input cannot be None for StreamDiffusionV2Pipeline")
 
-        # Note: prepare() was already called by frame_processor before __call__
+        # Note: The caller must call prepare() before __call__()
         # We just need to get the expected chunk size based on current state
         exp_chunk_size = (
             self.start_chunk_size if self.last_frame is None else self.chunk_size
