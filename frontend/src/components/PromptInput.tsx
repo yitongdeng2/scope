@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import { Slider } from "./ui/slider";
@@ -91,48 +90,42 @@ export function PromptInput({
 
   // Calculate normalized weights for display
   const totalWeight = prompts.reduce((sum, p) => sum + p.weight, 0);
-  const normalizedWeights = prompts.map(
-    p => (totalWeight > 0 ? (p.weight / totalWeight) * 100 : 0)
+  const normalizedWeights = prompts.map(p =>
+    totalWeight > 0 ? (p.weight / totalWeight) * 100 : 0
   );
 
   const isSinglePrompt = prompts.length === 1;
 
   // Render a single prompt field with expandable textarea
-  const renderPromptField = (index: number, placeholder: string, showRemove: boolean) => {
+  const renderPromptField = (
+    index: number,
+    placeholder: string,
+    showRemove: boolean
+  ) => {
     const isFocused = focusedIndex === index;
     const prompt = prompts[index];
 
     return (
       <>
-        {isFocused ? (
-          <Textarea
-            placeholder={placeholder}
-            value={prompt.text}
-            onChange={e => handlePromptTextChange(index, e.target.value)}
-            onKeyDown={handleKeyDown}
-            onFocus={() => setFocusedIndex(index)}
-            onBlur={() => setFocusedIndex(null)}
-            disabled={disabled}
-            autoFocus
-            className="flex-1 min-h-[80px] resize-none bg-transparent border-0 text-card-foreground placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 p-0 disabled:opacity-50 disabled:cursor-not-allowed"
-          />
-        ) : (
-          <Input
-            placeholder={placeholder}
-            value={prompt.text}
-            onChange={e => handlePromptTextChange(index, e.target.value)}
-            onKeyDown={handleKeyDown}
-            onFocus={() => setFocusedIndex(index)}
-            disabled={disabled}
-            className="flex-1 bg-transparent border-0 text-card-foreground placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 p-0 disabled:opacity-50 disabled:cursor-not-allowed"
-          />
-        )}
+        <Textarea
+          placeholder={placeholder}
+          value={prompt.text}
+          onChange={e => handlePromptTextChange(index, e.target.value)}
+          onKeyDown={handleKeyDown}
+          onFocus={() => setFocusedIndex(index)}
+          onBlur={() => setFocusedIndex(null)}
+          disabled={disabled}
+          rows={isFocused ? 3 : 1}
+          className={`flex-1 resize-none bg-transparent border-0 text-card-foreground placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 p-0 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 ease-in-out ${
+            isFocused
+              ? "min-h-[80px]"
+              : "min-h-[24px] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          }`}
+        />
         <Button
           onClick={handleSubmit}
           disabled={
-            disabled ||
-            !prompts.some(p => p.text.trim()) ||
-            isProcessing
+            disabled || !prompts.some(p => p.text.trim()) || isProcessing
           }
           size="sm"
           className="rounded-full w-8 h-8 p-0 bg-black hover:bg-gray-800 text-white disabled:opacity-50 disabled:cursor-not-allowed"
