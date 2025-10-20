@@ -18,6 +18,9 @@ PREPARE_ONLY_PARAMS = frozenset(
         "prompt_interpolation_method",
         "reset_cache",
         "manage_cache",
+        "prompts",
+        "denoising_step_list",
+        "noise_scale",
     }
 )
 
