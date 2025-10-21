@@ -17,7 +17,6 @@ LOG_PROMPT_PREVIEW_LENGTH = 50  # Characters to show in log messages for prompt 
 
 # Prompt defaults
 DEFAULT_PROMPT_WEIGHT = 1.0  # Default weight for prompt blending
-SLERP_MIN_EMBEDDINGS = 2  # SLERP requires exactly 2 embeddings
 
 
 def normalize_weights(weights, dtype, device) -> torch.Tensor:
@@ -52,11 +51,10 @@ def slerp(embed1, embed2, t) -> torch.Tensor:
         return (1.0 - t) * embed1 + t * embed2
 
     sin_omega = torch.sin(omega)
-    epsilon = 1e-8
 
     # Compute interpolation coefficients
-    coeff1 = torch.sin((1.0 - t) * omega) / (sin_omega + epsilon)
-    coeff2 = torch.sin(t * omega) / (sin_omega + epsilon)
+    coeff1 = torch.sin((1.0 - t) * omega) / (sin_omega + EPSILON)
+    coeff2 = torch.sin(t * omega) / (sin_omega + EPSILON)
 
     # Interpolate
     result = coeff1 * embed1 + coeff2 * embed2
@@ -73,7 +71,7 @@ def blend_embeddings(embeddings, weights, method, dtype, device) -> torch.Tensor
     normalized_weights = normalize_weights(weights, dtype, device)
 
     # Apply interpolation
-    if method == "slerp" and len(embeddings) == SLERP_MIN_EMBEDDINGS:
+    if method == "slerp" and len(embeddings) == 2:
         # Spherical linear interpolation for 2 prompts
         t = normalized_weights[1].item()
         combined_embeds = slerp(embeddings[0], embeddings[1], t)
