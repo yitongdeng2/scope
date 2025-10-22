@@ -12,6 +12,18 @@ from .pipeline_manager import PipelineManager, PipelineNotAvailableException
 
 logger = logging.getLogger(__name__)
 
+# Parameters that are only used in prepare() and should not be passed to __call__()
+PREPARE_ONLY_PARAMS = frozenset(
+    {
+        "prompt_interpolation_method",
+        "reset_cache",
+        "manage_cache",
+        "prompts",
+        "denoising_step_list",
+        "noise_scale",
+    }
+)
+
 # Multiply the # of output frames from pipeline by this to get the max size of the output queue
 OUTPUT_QUEUE_MAX_SIZE_FACTOR = 3
 
@@ -245,8 +257,11 @@ class FrameProcessor:
                     return
                 input = self.prepare_chunk(current_chunk_size)
         try:
-            # Pass parameters
-            output = pipeline(input, **self.parameters)
+            # Pass parameters (excluding prepare-only parameters)
+            call_params = {
+                k: v for k, v in self.parameters.items() if k not in PREPARE_ONLY_PARAMS
+            }
+            output = pipeline(input, **call_params)
 
             processing_time = time.time() - start_time
             num_frames = output.shape[0]
