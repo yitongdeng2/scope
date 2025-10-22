@@ -116,33 +116,12 @@ export function PromptInput({
           onBlur={() => setFocusedIndex(null)}
           disabled={disabled}
           rows={isFocused ? 3 : 1}
-          className={`flex-1 resize-none bg-transparent border-0 text-card-foreground placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 p-0 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 ease-in-out ${
+          className={`flex-1 resize-none bg-transparent border-0 text-card-foreground placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 p-0 disabled:opacity-50 disabled:cursor-not-allowed ${
             isFocused
               ? "min-h-[80px]"
               : "min-h-[24px] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
           }`}
         />
-        <Button
-          onClick={handleSubmit}
-          disabled={
-            disabled || !prompts.some(p => p.text.trim()) || isProcessing
-          }
-          size="sm"
-          className="rounded-full w-8 h-8 p-0 bg-black hover:bg-gray-800 text-white disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isProcessing ? "..." : <ArrowUp className="h-4 w-4" />}
-        </Button>
-        {index === prompts.length - 1 && prompts.length < 4 && (
-          <Button
-            onClick={handleAddPrompt}
-            disabled={disabled}
-            size="sm"
-            variant="ghost"
-            className="rounded-full w-8 h-8 p-0"
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-        )}
         {showRemove && (
           <Button
             onClick={() => handleRemovePrompt(index)}
@@ -160,14 +139,41 @@ export function PromptInput({
 
   // Single prompt mode: simple pill UI
   if (isSinglePrompt) {
-    const isFocused = focusedIndex === 0;
     return (
-      <div
-        className={`flex items-start bg-card border border-border px-4 py-3 gap-3 transition-all ${
-          isFocused ? "rounded-lg" : "rounded-full"
-        } ${className}`}
-      >
-        {renderPromptField(0, "blooming flowers", false)}
+      <div className={`space-y-3 ${className}`}>
+        <div className="flex items-start bg-card border border-border rounded-lg px-4 py-3 gap-3">
+          {renderPromptField(0, "blooming flowers", false)}
+        </div>
+
+        <div className="flex items-center justify-end gap-2">
+          {prompts.length < 4 && (
+            <Button
+              onMouseDown={e => {
+                e.preventDefault();
+                handleAddPrompt();
+              }}
+              disabled={disabled}
+              size="sm"
+              variant="ghost"
+              className="rounded-full w-8 h-8 p-0"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          )}
+          <Button
+            onMouseDown={e => {
+              e.preventDefault();
+              handleSubmit();
+            }}
+            disabled={
+              disabled || !prompts.some(p => p.text.trim()) || isProcessing
+            }
+            size="sm"
+            className="rounded-full w-8 h-8 p-0 bg-black hover:bg-gray-800 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isProcessing ? "..." : <ArrowUp className="h-4 w-4" />}
+          </Button>
+        </div>
       </div>
     );
   }
@@ -176,18 +182,13 @@ export function PromptInput({
   return (
     <div className={`space-y-3 ${className}`}>
       {prompts.map((prompt, index) => {
-        const isFocused = focusedIndex === index;
         return (
           <div key={index} className="space-y-2">
-            <div
-              className={`flex items-start bg-card border border-border px-4 py-3 gap-3 transition-all ${
-                isFocused ? "rounded-lg" : "rounded-full"
-              }`}
-            >
+            <div className="flex items-start bg-card border border-border rounded-lg px-4 py-3 gap-3">
               {renderPromptField(index, `Prompt ${index + 1}`, true)}
             </div>
 
-            <div className="flex items-center gap-3 px-4">
+            <div className="flex items-center gap-3">
               <span className="text-xs text-muted-foreground w-12">
                 Weight:
               </span>
@@ -208,28 +209,62 @@ export function PromptInput({
         );
       })}
 
-      {prompts.length >= 2 && (
-        <div className="flex items-center gap-2 px-4">
-          <span className="text-xs text-muted-foreground">Blend:</span>
-          <Select
-            value={interpolationMethod}
-            onValueChange={value =>
-              onInterpolationMethodChange?.(value as "linear" | "slerp")
+      <div className="flex items-center justify-between gap-2">
+        {prompts.length >= 2 ? (
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">Blend:</span>
+            <Select
+              value={interpolationMethod}
+              onValueChange={value =>
+                onInterpolationMethodChange?.(value as "linear" | "slerp")
+              }
+              disabled={disabled}
+            >
+              <SelectTrigger className="w-24 h-7 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="linear">Linear</SelectItem>
+                <SelectItem value="slerp" disabled={prompts.length > 2}>
+                  Slerp
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        ) : (
+          <div />
+        )}
+
+        <div className="flex items-center gap-2">
+          {prompts.length < 4 && (
+            <Button
+              onMouseDown={e => {
+                e.preventDefault();
+                handleAddPrompt();
+              }}
+              disabled={disabled}
+              size="sm"
+              variant="ghost"
+              className="rounded-full w-8 h-8 p-0"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          )}
+          <Button
+            onMouseDown={e => {
+              e.preventDefault();
+              handleSubmit();
+            }}
+            disabled={
+              disabled || !prompts.some(p => p.text.trim()) || isProcessing
             }
-            disabled={disabled}
+            size="sm"
+            className="rounded-full w-8 h-8 p-0 bg-black hover:bg-gray-800 text-white disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <SelectTrigger className="w-24 h-7 text-xs">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="linear">Linear</SelectItem>
-              <SelectItem value="slerp" disabled={prompts.length > 2}>
-                Slerp
-              </SelectItem>
-            </SelectContent>
-          </Select>
+            {isProcessing ? "..." : <ArrowUp className="h-4 w-4" />}
+          </Button>
         </div>
-      )}
+      </div>
     </div>
   );
 }
