@@ -35,6 +35,12 @@ export const PIPELINES: Record<string, PipelineInfo> = {
       "A pipeline that returns the input video without any processing that is useful for testing and debugging.",
     category: "video-input",
   },
+  mycustom: {
+    name: "MyCustom",
+    about:
+      "Yitong's custom pipeline for testing",
+    category: "video-input",
+  },
   // vod: {
   //   name: "VOD",
   //   about:

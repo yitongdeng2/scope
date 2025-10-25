@@ -297,6 +297,25 @@ class PipelineManager:
             logger.info("LongLive pipeline initialized")
             return pipeline
 
+        elif pipeline_id == "mycustom":
+            from pipelines.mycustom.pipeline import MyCustomPipeline
+
+            # Use load parameters for resolution, default to 512x512
+            height = 512
+            width = 512
+            if load_params:
+                height = load_params.get("height", 512)
+                width = load_params.get("width", 512)
+
+            pipeline = MyCustomPipeline(
+                height=height,
+                width=width,
+                device=torch.device("cuda"),
+                dtype=torch.bfloat16,
+            )
+            logger.info("MyCustom pipeline initialized")
+            return pipeline
+
         else:
             raise ValueError(f"Invalid pipeline ID: {pipeline_id}")
 
