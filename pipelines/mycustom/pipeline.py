@@ -6,8 +6,14 @@ import torch
 from ..base.wan2_1.wrapper import WanDiffusionWrapper, WanTextEncoder, WanVAEWrapper
 from ..blending import PromptBlender
 from ..interface import Pipeline, Requirements
-from .inference import InferencePipeline
 from .utils.lora_utils import configure_lora_for_model, load_lora_checkpoint
+from ..process import postprocess_chunk
+
+# Add parent directory to path to import real_time_gen_V2
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+from real_time_gen_V3.inference import InferencePipeline
 
 logger = logging.getLogger(__name__)
 
@@ -116,7 +122,7 @@ class MyCustomPipeline(Pipeline):
         _: torch.Tensor | list[torch.Tensor] | None = None,
     ):
         # Note: The caller must call prepare() before __call__()
-        return self.stream()
+        return postprocess_chunk(self.stream())
 
     def _apply_prompt_blending(
         self,
