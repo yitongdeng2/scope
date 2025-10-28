@@ -321,7 +321,7 @@ export function StreamPage() {
         console.log(
           `Loading with resolution: ${resolution.width}x${resolution.height}`
         );
-      } else if (settings.pipelineId === "longlive" && resolution) {
+      } else if ((settings.pipelineId === "longlive" || settings.pipelineId === "mycustom") && resolution) {
         loadParams = {
           height: resolution.height,
           width: resolution.width,

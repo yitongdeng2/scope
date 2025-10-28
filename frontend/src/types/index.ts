@@ -2,7 +2,8 @@ export type PipelineId =
   | "streamdiffusionv2"
   | "passthrough"
   | "vod"
-  | "longlive";
+  | "longlive"
+  | "mycustom";
 
 export interface SystemMetrics {
   cpu: number;

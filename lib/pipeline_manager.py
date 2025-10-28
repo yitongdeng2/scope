@@ -298,20 +298,36 @@ class PipelineManager:
             return pipeline
 
         elif pipeline_id == "mycustom":
+            from lib.models_config import get_model_file_path, get_models_dir
             from pipelines.mycustom.pipeline import MyCustomPipeline
 
-            # Use load parameters for resolution, default to 512x512
-            height = 512
-            width = 512
+            config = OmegaConf.load("pipelines/mycustom/model.yaml")
+            models_dir = get_models_dir()
+            config["model_dir"] = str(models_dir)
+            config["generator_path"] = get_model_file_path(
+                "LongLive-1.3B/models/longlive_base.pt"
+            )
+            config["lora_path"] = get_model_file_path("LongLive-1.3B/models/lora.pt")
+            config["text_encoder_path"] = str(
+                get_model_file_path(
+                    "WanVideo_comfy/umt5-xxl-enc-fp8_e4m3fn.safetensors"
+                )
+            )
+
+            height = 320
+            width = 576
+            seed = 42
             if load_params:
-                height = load_params.get("height", 512)
-                width = load_params.get("width", 512)
+                height = load_params.get("height", 320)
+                width = load_params.get("width", 576)
+                seed = load_params.get("seed", 42)
+
+            config["height"] = height
+            config["width"] = width
+            config["seed"] = seed
 
             pipeline = MyCustomPipeline(
-                height=height,
-                width=width,
-                device=torch.device("cuda"),
-                dtype=torch.bfloat16,
+                config, device=torch.device("cuda"), dtype=torch.bfloat16
             )
             logger.info("MyCustom pipeline initialized")
             return pipeline

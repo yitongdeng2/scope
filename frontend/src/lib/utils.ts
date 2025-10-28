@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function getDefaultDenoisingSteps(pipelineId: PipelineId): number[] {
-  if (pipelineId === "longlive") {
+  if (pipelineId === "longlive" || pipelineId === "mycustom") {
     return [1000, 750, 500, 250];
   } else if (pipelineId === "streamdiffusionv2") {
     return [700, 500];
@@ -21,7 +21,11 @@ export function getDefaultResolution(pipelineId: PipelineId): {
 } {
   if (pipelineId === "longlive") {
     return { height: 320, width: 576 };
-  } else if (pipelineId === "streamdiffusionv2") {
+  } 
+  else if (pipelineId === "mycustom") {
+    return { height: 480, width: 832 };
+  }
+  else if (pipelineId === "streamdiffusionv2") {
     return { height: 512, width: 512 };
   }
   return { height: 320, width: 576 }; // Default fallback

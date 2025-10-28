@@ -5,7 +5,7 @@ import type {
   SettingsState,
   PromptData,
 } from "../types";
-import { getDefaultResolution } from "../lib/utils";
+import { getDefaultDenoisingSteps, getDefaultResolution } from "../lib/utils";
 
 export function useStreamState() {
   const [systemMetrics, setSystemMetrics] = useState<SystemMetrics>({
@@ -22,13 +22,11 @@ export function useStreamState() {
   });
 
   const [settings, setSettings] = useState<SettingsState>({
-    pipelineId: "streamdiffusionv2",
-    resolution: getDefaultResolution("streamdiffusionv2"), // Default resolution for StreamDiffusionV2
+    pipelineId: "mycustom",
+    resolution: getDefaultResolution("mycustom"), // Default resolution for mycustom
     seed: 42,
-    denoisingSteps: [700, 500], // Default for StreamDiffusionV2
-    noiseScale: 0.7, // Default noise scale for StreamDiffusionV2
-    noiseController: true, // Default noise controller for StreamDiffusionV2
-    manageCache: true, // Default manage cache for StreamDiffusionV2
+    denoisingSteps: getDefaultDenoisingSteps("mycustom"), // Default for mycustom
+    manageCache: true, // Default manage cache
     paused: false, // Default to not paused (generating)
   });
 
