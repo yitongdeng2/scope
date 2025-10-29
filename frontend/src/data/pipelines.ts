@@ -17,7 +17,7 @@ export const PIPELINES: Record<string, PipelineInfo> = {
     modified: true,
     category: "video-input",
     defaultPrompt:
-      "Cinematic scene of a hooded man walking through a medieval town built from weathered stone and timber. Narrow cobblestone streets wind between tall gothic buildings with archways, hanging banners, and glowing lanterns. The air is filled with drifting dust and soft rays of sunlight cutting through the mist. Merchants and townsfolk move in the distance, adding life to the bustling market square. The mood is tense yet majestic—an Assassin’s Creed–style world blending realism and myth. Ultra-photorealistic 8K detail, HDR lighting, cinematic composition with shallow depth of field, volumetric light shafts, film-grade color grading with warm sunlight and cool shadow contrast. Inspired by Assassin’s Creed Unity and Kingdom of Heaven, with intricate medieval architecture and atmospheric immersion.",
+      "A cinematic scene of a man walking through a vast sun-lit meadow surrounded by rolling green hills and wildflowers. Epic scenery with distant mountains and drifting clouds. Golden-hour lighting, warm sunlight, soft atmospheric haze, and gentle wind moving the grass. Realistic depth of field and natural lens flares. 35 mm film look, shallow focus, eye-level camera tracking smoothly behind the man. Photorealistic, ultra-detailed textures, high dynamic range color grading, inspired by The Hobbit and Weta Digital cinematography, filmic tone mapping, volumetric light, cinematic realism.",
   },
   streamdiffusionv2: {
     name: "StreamDiffusionV2",

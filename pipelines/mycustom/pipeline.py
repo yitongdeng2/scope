@@ -7,7 +7,7 @@ from ..base.wan2_1.wrapper import WanDiffusionWrapper, WanTextEncoder, WanVAEWra
 from ..blending import PromptBlender
 from ..interface import Pipeline, Requirements
 from .utils.lora_utils import configure_lora_for_model, load_lora_checkpoint
-from ..process import postprocess_chunk
+from ..process import preprocess_chunk, postprocess_chunk
 
 # Add parent directory to path to import real_time_gen_V2
 import sys
@@ -25,7 +25,12 @@ class MyCustomPipeline(Pipeline):
         low_memory: bool = False,
         device: torch.device | None = None,
         dtype: torch.dtype = torch.bfloat16,
-    ):
+    ):  
+
+        self.device = device
+        self.dtype = dtype
+        self.height = getattr(config, "height", 512)
+        self.width = getattr(config, "width", 512)
 
         seed = getattr(config, "seed", 42)
 
@@ -75,14 +80,35 @@ class MyCustomPipeline(Pipeline):
                 prompts, prompt_interpolation_method, denoising_step_list, init_cache
             )
 
-        return None
+        # num to request
+        num_to_request = 9 if self.stream.current_start == 0 else 12
+        return Requirements(input_size=num_to_request) # This is to require n frames from 
 
+    # def __call__(
+    #     self,
+    #     _: torch.Tensor | list[torch.Tensor] | None = None,
+    # ):
+    #     # Note: The caller must call prepare() before __call__()
+    #     #return postprocess_chunk(self.stream())
+    #     return self.stream()
     def __call__(
         self,
-        _: torch.Tensor | list[torch.Tensor] | None = None,
+        input: torch.Tensor | list[torch.Tensor] | None = None,
     ):
+        if input is None:
+            raise ValueError("Input cannot be None for MyCustomPipeline")
+
         # Note: The caller must call prepare() before __call__()
-        return postprocess_chunk(self.stream())
+        
+        # If input is a list of frames, preprocess them
+        # This converts list[Tensor] -> Tensor in BCTHW format with values in [-1, 1]
+        if isinstance(input, list):
+            input = preprocess_chunk(
+                input, self.device, self.dtype, height=self.height, width=self.width
+            )
+
+        # Pass the preprocessed input to the stream processor
+        return self.stream(input)
 
     def _apply_prompt_blending(
         self,
