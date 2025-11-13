@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, "/home/yitong-moonlake/real_time_gen_V3")
 from inference import InferencePipeline
-
+from inference_barebone import InferenceBarebonePipeline
 logger = logging.getLogger(__name__)
 
 
@@ -68,7 +68,8 @@ class MyCustomPipeline(Pipeline):
         self.dtype = dtype
         self.height = 480
         self.width = 832
-        self.stream = InferencePipeline()
+        #self.stream = InferencePipeline()
+        self.stream = InferenceBarebonePipeline()
 
     def prepare(self, should_prepare: bool = False, **kwargs) -> Requirements | None:
         if should_prepare: # this is run at reset time
@@ -103,7 +104,7 @@ class MyCustomPipeline(Pipeline):
         # update prompt used
         self.existing_prompt, self.existing_prompt_case = new_prompt, new_prompt_case
 
-        output_chunk, output_fresh_chunk, output_depth_chunk, output_scribble_chunk, output_mask_chunk, output_mask_encoded_chunk = self.stream(input, 
+        output_chunk, _, _, _, _, _ = self.stream(input, 
                                                                       identity = None,
                                                                       depth= None,#depth_chunk, #None, #depth_chunk, 
                                                                       scribble= None, #scribble_chunk
