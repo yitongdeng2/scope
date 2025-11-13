@@ -69,9 +69,9 @@ class MyCustomPipeline(Pipeline):
         self.dtype = dtype
         self.height = 480
         self.width = 832
-        #self.stream = InferencePipeline()
-        #self.stream = InferenceBarebonePipeline()
-        self.stream = InferenceFastPipeline()
+        #self.stream = InferencePipeline().to(dtype=dtype, device=device)
+        #self.stream = InferenceBarebonePipeline().to(dtype=dtype, device=device)
+        self.stream = InferenceFastPipeline().to(dtype=dtype, device=device)
 
     def prepare(self, should_prepare: bool = False, **kwargs) -> Requirements | None:
         if should_prepare: # this is run at reset time
