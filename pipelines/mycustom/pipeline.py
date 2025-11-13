@@ -1,6 +1,6 @@
 import logging
 import time
-
+from einops import rearrange
 import torch
 
 from ..base.wan2_1.wrapper import WanDiffusionWrapper, WanTextEncoder, WanVAEWrapper
