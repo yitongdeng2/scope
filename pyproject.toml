@@ -58,6 +58,7 @@ dependencies = [
     "pillow>=11.3.0",
     "scipy>=1.15.3",
     "onnxruntime-gpu>=1.23.2",
+    "kornia>=0.8.2",
 ]
 
 [project.scripts]
