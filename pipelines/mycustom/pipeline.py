@@ -15,6 +15,7 @@ from pathlib import Path
 sys.path.insert(0, "/home/yitong-moonlake/real_time_gen_V3")
 from inference import InferencePipeline
 from inference_barebone import InferenceBarebonePipeline
+from inference_fast import InferenceFastPipeline
 logger = logging.getLogger(__name__)
 
 
@@ -69,7 +70,8 @@ class MyCustomPipeline(Pipeline):
         self.height = 480
         self.width = 832
         #self.stream = InferencePipeline()
-        self.stream = InferenceBarebonePipeline()
+        #self.stream = InferenceBarebonePipeline()
+        self.stream = InferenceFastPipeline()
 
     def prepare(self, should_prepare: bool = False, **kwargs) -> Requirements | None:
         if should_prepare: # this is run at reset time
